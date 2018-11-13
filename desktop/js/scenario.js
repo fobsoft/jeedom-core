@@ -318,6 +318,17 @@ $('#bt_scenarioTab').on('click',function(){
   }, 50);
 });
 
+/********************BEGIN HOME MAIN************************/
+$('#bt_diagramTab').on('click',function(){
+
+  setTimeout(function(){ 
+    //setEditor(); 
+    load();  // load an initial diagram from some JSON text
+    taAutosize();
+  }, 50);
+});
+/******************** END HOME MAIN ************************/
+
 /*******************Element***********************/
 
 $('#div_pageContainer').off('click','.helpSelectCron').on('click','.helpSelectCron',function(){
@@ -878,6 +889,24 @@ function printScenario(_id) {
       $('#div_scenarioElement').append('<center class="span_noScenarioElement"><span style=\'color:#767676;font-size:1.2em;font-weight: bold;\'>Pour constituer votre scénario veuillez ajouter des blocs</span></center>')
     }
     actionOptions = []
+    
+    /********************BEGIN HOME MAIN************************/
+    previousOutFlowLinkId =   -1;
+    previousOutFlowPort =     "B";
+    previousLocX =            0;
+    previousLocY =            0;
+
+    scenarioNodeDataArray = [];
+    scenarioLinkDataArray = [];
+    
+    scenarioNodeDataArray.push({
+      category:   "start", 
+      key:        -1,
+      loc:        previousLocX + " " + previousLocY,
+      text:       "Start",
+    });
+    /******************** END HOME MAIN ************************/
+    
     for (var i in data.elements) {
       $('#div_scenarioElement').append(addElement(data.elements[i]));
     }
@@ -894,6 +923,8 @@ function printScenario(_id) {
       }
       $.hideLoading();
       taAutosize();
+      /********************   HOME MAIN   ************************/
+      initFlowChart(data);
     }
   });
     updateSortable();
@@ -1009,6 +1040,33 @@ function addExpression(_expression) {
     retour += '</div>';
     break;
     case 'action' :
+      /********************BEGIN HOME MAIN************************/
+      //switch (previousOutFlowPort) {
+      //  case 'B':
+          elementLocX =       previousLocX;
+          elementLocY =       previousLocY + 100;
+      //    break;
+      //  default:
+      //    elementLocX =       previousLocX + 200;
+      //    elementLocY =       previousLocY;
+      //    break;
+      //}
+      
+      previousLocX =      elementLocX;
+      previousLocY =      elementLocY;
+    
+      if (!isset(_expression.options)) {
+        _expression.options =                  {};
+        _expression.options.flowpoints =       '';
+        _expression.options.flowloc =          elementLocX + " " + elementLocY;
+      }    
+      else {
+        _expression.options.flowloc =          elementLocX + " " + elementLocY;
+      }
+    
+      setFlowExpressionElement(_expression);
+      /******************** END HOME MAIN ************************/
+      
     retour += '<div class="col-xs-1" style="margin-top: 4px">';
     retour += '<i class="fas fa-arrows-alt-v cursor bt_sortable" style="margin-right: 5px; "></i>';
     if (!isset(_expression.options) || !isset(_expression.options.enable) || _expression.options.enable == 1) {
@@ -1022,6 +1080,10 @@ function addExpression(_expression) {
       retour += '<input type="checkbox" class="expressionAttr" data-l1key="options" data-l2key="background" checked style="margin-top : 9px;margin-right : 0px;" title="{{Cocher pour que la commande s\'exécute en parallèle des autres actions}}"/>';
     }
 
+    /********************BEGIN HOME MAIN************************/
+    retour += '<input class="expressionAttr" data-l1key="options" data-l2key="flowpoints" style="display : none;" value="' + init(_expression.options.flowpoints) + '"/>';
+    retour += '<input class="expressionAttr" data-l1key="options" data-l2key="flowloc" style="display : none;" value="' + init(_expression.options.flowloc) + '"/>';
+    /******************** END HOME MAIN ************************/
     retour += '</div>';
     retour += '<div class="col-xs-4" style="margin-top: 4px"><div class="input-group input-group-sm">';
     retour += '<span class="input-group-btn">';
@@ -1052,6 +1114,25 @@ function addExpression(_expression) {
     break;
   }
   retour += '</div>';
+  
+  /********************BEGIN HOME MAIN************************
+  scenarioNodeDataArray.push({
+    category:   init(_expression.type), 
+    type:       init(_expression.expression).replace(/"/g,'&quot;'),
+    key:        init(_expression.id),
+    loc:        0,  //init(_expression.options.screenPosition),  
+    text:       '', //init(_expression.options.comment),
+  });
+
+  scenarioLinkDataArray.push({
+    from:     init(_expression.scenarioSubElement_id), 
+    to:       init(_expression.id), 
+    fromPort: "B", 
+    toPort:   "T", 
+    points:   [-226,-608.9766599078512,-226,-598.9766599078512,-226,-592.4571921060252,-226,-592.4571921060252,-226,-585.9377243041993,-226,-575.9377243041993 ]
+  })
+   ******************** END HOME MAIN ************************/
+
   return retour;
 }
 
@@ -1118,6 +1199,9 @@ function addSubElement(_subElement, _pColor) {
 
     break;
     case 'then' :
+      /********************   HOME MAIN   ************************/
+      previousOutFlowPort =   'B';
+    
     retour += '<input class="subElementAttr" data-l1key="subtype" style="display : none;" value="action"/>';
     retour += '  <div style="display:table-cell; width: 125px;vertical-align: top; padding-left: 15px;">';
     retour += '     <legend style="margin-bottom: 0px; color : white;border : none;">{{ALORS}}</legend>'; 
@@ -1147,6 +1231,9 @@ function addSubElement(_subElement, _pColor) {
 
     break;
     case 'else' :
+      /********************   HOME MAIN   ************************/
+      previousOutFlowPort =   'R';
+
     retour += '<input class="subElementAttr subElementElse" data-l1key="subtype" style="display : none;" value="action"/>';
     retour += '  <div style="display:table-cell; width: 125px; vertical-align: top; padding-left: 15px;">';
     retour += '     <legend style="margin-bottom: 0px; color : white;border : none;">{{SINON}}</legend>'; 
@@ -1173,6 +1260,9 @@ function addSubElement(_subElement, _pColor) {
 
     break;
     case 'for' :
+      /********************   HOME MAIN   ************************/
+      previousOutFlowPort =   'R';
+      
     retour += '  <input class="subElementAttr" data-l1key="subtype" style="display : none;" value="condition"/>';
     retour += '  <div style="display:table-cell; width: 30px;vertical-align: top; padding-top: 5px;">';
     retour += '     <i class="fas fa-arrows-alt-v pull-left cursor bt_sortable"></i>';
@@ -1360,10 +1450,47 @@ function addElement(_element) {
   var div = '<div class="element" style="color : white;padding-right : 7px;padding-left : 7px;padding-bottom : 0px;padding-top : 2px;margin-bottom : 0px;background-color : ' + listColorStrong[color] + '; border :1px solid ' + listColorStrong[color] + '">';
   div += '<input class="elementAttr" data-l1key="id" style="display : none;" value="' + init(_element.id) + '"/>';
   div += '<input class="elementAttr" data-l1key="type" style="display : none;" value="' + init(_element.type) + '"/>';
+
+  /********************BEGIN HOME MAIN************************/
+  //switch (previousOutFlowPort) {
+  //  case 'B':
+      elementLocX =       previousLocX;
+      elementLocY =       previousLocY + 100;
+  //    break;
+  //  default
+  //    elementLocX =       previousLocX + 200;
+  //    elementLocY =       previousLocY;
+  //    break;
+  //}
+  
+  if (!isset(_element.options)) {
+    _element.options =                  {};
+    _element.options.flowpoints =       '';
+    _element.options.flowloc =          elementLocX + " " + elementLocY;
+    _element.options.expression_desc =  '';
+  }
+  else {
+    _element.options.flowloc =          elementLocX + " " + elementLocY;
+  }
+  
+  div += '  <input class="elementAttr" data-l1key="options" data-l2key="flowpoints" style="display : none;" value="' + init(_element.options.flowpoints) + '"/>';
+  div += '  <input class="elementAttr" data-l1key="options" data-l2key="flowloc" style="display : none;" value="' + init(_element.options.flowloc) + '"/>';
+      
+  previousLocX =      elementLocX;
+  previousLocY =      elementLocY;
+  
+  setFlowElement(_element);
+  
+  previousLocX = previousLocX + 30;
+  previousLocY = previousLocY + 400;
+  /******************** END HOME MAIN ************************/
+  
   switch (_element.type) {
     case 'if' :
     if (isset(_element.subElements) && isset(_element.subElements)) {
       for (var j in _element.subElements) {
+        /********************   HOME MAIN   ************************/
+        previousOutFlowLinkId = init(_element.id);
         div += addSubElement(_element.subElements[j], color);
       }
     } else {
@@ -1421,6 +1548,8 @@ function addElement(_element) {
     }
     break;
     case 'action' :
+      suffixesFlowLinkId = init(_element.id);
+      
     if (isset(_element.subElements) && isset(_element.subElements)) {
       for (var j in _element.subElements) {
         div += addSubElement(_element.subElements[j], color);
@@ -1431,8 +1560,72 @@ function addElement(_element) {
     break;
   }
   div += '</div>';
+  
+  /********************BEGIN HOME MAIN************************/
+  previousOutFlowLinkId = init(_element.id);
+  previousOutFlowPort =   'B';  
+  previousLocX =          elementLocX;
+  previousLocY =          elementLocY;
+  /******************** END HOME MAIN ************************/
+  
   return div;
 }
+
+/********************BEGIN HOME MAIN************************/
+String.prototype.replaceArray = function(find, replace) {
+  var replaceString = this;
+  var regex; 
+  for (var i = 0; i < find.length; i++) {
+    regex = new RegExp(find[i], "g");
+    replaceString = replaceString.replace(regex, replace[i]);
+  }
+  return replaceString;
+};
+
+function setFlowElement(_element) {
+  scenarioNodeDataArray.push({
+    category:   init(_element.type), 
+    key:        init(_element.id),
+    loc:        init(_element.options.flowloc),  
+    text:       'ElmTitle:: ' + init(_element.type),
+    desc:       'ElmDesc:: ' + init(_element.options.expression_desc),
+  });
+
+  scenarioLinkDataArray.push({
+    from:     previousOutFlowLinkId, 
+    to:       init(_element.id), 
+    fromPort: previousOutFlowPort, 
+    toPort:   "T", 
+    points:   init(_element.options.flowpoints)
+  });
+  
+  previousOutFlowLinkId = init(_element.id);
+}
+
+function setFlowExpressionElement(_expression) {  
+  if (_expression.options.exepDesc == '') {
+    _expression.options.exepDesc = 'Action';   
+  }
+  
+  scenarioNodeDataArray.push({
+    category:   'action', 
+    key:        init(100000000 + _expression.id),
+    loc:        init(_expression.options.flowloc),  
+    text:       'ExpText::' + init(_expression.options.exepDesc),
+    desc:       'ExpDesc::' + init(_expression.expression).replace(/"/g,'&quot;'),
+  });
+
+  scenarioLinkDataArray.push({
+    from:     previousOutFlowLinkId, 
+    to:       init(100000000 + _expression.id), 
+    fromPort: previousOutFlowPort, 
+    toPort:   "T", 
+    points:   init(_expression.options.flowpoints)
+  });
+  
+  previousOutFlowLinkId = init(100000000 + _expression.id);
+}
+/******************** END HOME MAIN ************************/
 
 function getElement(_element) {
   var element = _element.getValues('.elementAttr', 1);

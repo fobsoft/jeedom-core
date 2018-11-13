@@ -144,6 +144,7 @@ if (count($totalScenario) == 0) {
    <li role="presentation"><a class="cursor" aria-controls="home" role="tab" id="bt_scenarioThumbnailDisplay"><i class="fas fa-arrow-circle-left"></i></a></li>
    <li role="presentation" class="active"><a href="#generaltab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Général}} (ID : <span class="scenarioAttr" data-l1key="id" ></span>)</a></li>
    <li role="presentation"><a id="bt_scenarioTab" href="#scenariotab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas fa-filter"></i> {{Scénario}}</a></li>
+   <li role="presentation"><a id="bt_diagramTab" href="#diagramtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas fa-filter"></i> {{Diagram}}</a></li>
  </ul>
 </ul>
 <div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
@@ -271,6 +272,77 @@ foreach (jeeObject::all() as $object) {
   <br/>
   <div id="div_scenarioElement" class="element" style="padding-bottom: 70px;"></div>
 </div>
+<!-- /********************BEGIN HOME MAIN************************/ -->
+<div role="tabpanel" class="tab-pane" id="diagramtab">
+  <br/>
+  <div id="sample">
+    <div style="width:100%; white-space:nowrap;">
+      <span style="display: inline-block; vertical-align: top; width:150px;">
+        <div id="myPaletteHeaderFlow" style="border: solid 1px black; background:#ccc;" onclick="showPalette('Flow')">Flow</div>
+        <div id="myPaletteFlowDiv" style="border: 0px; height: 100px;"></div>
+        <div id="myPaletteHeaderDateTime" style="border: solid 1px black; background:#ccc;" onclick="showPalette('DateTime')">Date / Time</div>
+        <div id="myPaletteDateTimeDiv" style="border: 0px; height: 100px;"></div>
+        <div id="myPaletteHeaderGeneral" style="border: solid 1px black; background:#ccc;" onclick="showPalette('General')">General</div>
+        <div id="myPaletteGeneralDiv" style="border: solid 1px black; height: 180px;"></div>
+        <div id="myPaletteHeaderInterface" style="border: solid 1px black; background:#ccc;" onclick="showPalette('Interface')">Interface</div>
+        <div id="myPaletteInterfaceDiv" style="border: solid 1px black; height: 120px;"></div>
+        <div id="myPaletteHeaderSensor" style="border: solid 1px black; background:#ccc;" onclick="showPalette('Sensor')">Sensor</div>
+        <div id="myPaletteSensorDiv" style="border: solid 1px black; height: 20px;"></div>
+        <div id="myPaletteHeaderObject" style="border: solid 1px black; background:#ccc;" onclick="showPalette('Object')">Object</div>
+        <div id="myPaletteObjectDiv" style="border: solid 1px black; height: 120px;"></div>
+        <div id="myPaletteHeaderEquipement" style="border: solid 1px black; background:#ccc;" onclick="showPalette('Equipement')">Equipement</div>
+        <div id="myPaletteEquipementDiv" style="border: solid 1px black; height: 60px;"></div>
+        <div id="myPaletteHeaderComponent" style="border: solid 1px black; background:#ccc;" onclick="showPalette('Component')">Component</div>
+        <div id="myPaletteComponentDiv" style="border: solid 1px black; height: 60px;"></div>
+        <div id="myPaletteHeaderSystem" style="border: solid 1px black; background:#ccc;" onclick="showPalette('System')">System</div>
+        <div id="myPaletteSystemDiv" style="border: solid 1px black; height: 40px;"></div>
+        </br>
+        <button id="SaveButton" onclick="save()">Save</button>
+        <button onclick="load()">Load</button>
+      </span>
+
+      <span style="display: inline-block; vertical-align: top; width:80%">
+        <div id="diagramDiv" style="border: solid 1px black; height: 720px; background: #efefef;"></div>
+      </span>
+    </div>
+
+    <textarea id="scenarioDiagram" style="width:100%;height:300px"></textarea>
+    <textarea id="mySavedModel" style="width:100%;height:300px">
+      { "class": "go.GraphLinksModel",
+        "linkFromPortIdProperty": "fromPort",
+        "linkToPortIdProperty": "toPort",
+        "nodeDataArray": [ 
+                          {"category":"start", "key":-1,                                                                                                                      "loc":"-226 -635", "text":"Start"},
+                          {"category":"if", "type":"if", "text":"Si personne a la maison\n#[Système][Presence][Mode]# \nin variable(absence)", "key":-5,                      "loc":"-223.0000000000001 -412.5000000000001"},
+                          {"category":"inout", "type":"arraySet", "text":"Array set absence", "key":-4,                                                                       "loc":"-226 -540"},
+                          {"category":"if", "type":"if", "text":"Si nouvelle presence\n#[#objectHumanName#][Mode][Mode]# != Present\ngetMax('MotionSensor') == 1", "key":-6,  "loc":"117.99999999999999 -412.99999999999983"},
+                          {"category":"if", "type":"if", "text":"Si quelqu'un pour la nuit\n#[Chambre E][Mode][Mode]#','in',array('Présent','Nuit')\n#[Système][Periode][Mode]#','in',array('Crépuscule','Nuit','Soir')\n", "key":-7, "loc":"575.9999999999998 -406.0000000000003"},
+                          {"category":"if", "type":"if", "text":"Si plus personne\ngetLastCollectDate('MotionSensor','1') > #[Chambre E][Piece Config][secLatenceMotion]#", "key":-8, "loc":"1110 -422"},
+                          {"category":"in", "type":"closeCategory", "text":"Close Categorie Ligth", "desc":"Effectue la fermeture de tous les equipements d'une categorie", "key":-2, "loc":"-113.00000000000006 -315.0000000000002"},
+                          {"category":"in", "type":"closeCategory", "text":"Close Categorie LightDel", "desc":"Effectue la fermeture de tous les equipements d'une categorie", "key":-9, "loc":"-132.99999999999983 -243.00000000000006"},
+                          {"category":"in", "type":"closeCategory", "text":"Close Categorie Plug", "desc":"Effectue la fermeture de tous les equipements d'une categorie", "key":-10, "loc":"-114.00000000000011 -168.00000000000003"},
+                          {"category":"gotoscenario", "type":"gotoscenario", "text":"Aller au scenario reviseConfort", "desc":"Description", "key":-11, "loc":"-108.00000000000006 2"},
+                          {"category":"inorout", "type":"equipement", "text":"Equipement\nMode piece = Absence", "desc":"Activer/Desactiver Masquer/Afficher un équipement", "key":-12, "loc":"-108 -102"}
+                         ],
+        "linkDataArray": [ 
+                          {"from":-1, "to":-4, "fromPort":"B", "toPort":"T", "points":[-226,-608.9766599078512, -226,-598.9766599078512, -226,-592.4571921060252,-226,                -592.4571921060252,-226,                -585.9377243041993, -226,-575.9377243041993 ]},
+                          {"from":-4, "to":-5, "fromPort":"B", "toPort":"T", "points":[-226,-504.06227569580085,-226,-494.06227569580085,-226,-484.1877243041994,-228.75000000000006, -484.1877243041994,-228.75000000000006, -474.31317291259785,-228.75000000000006,-464.31317291259785]},
+                          {"from":-5, "to":-6, "fromPort":"R", "toPort":"T", "points":[-96.05783843994146,-412.50000000000017,-86.05783843994146,-412.50000000000017,-85.80567550659183,-412.50000000000017,-85.80567550659183,-474.8131729125975,112.24999999999999,-474.8131729125975,112.24999999999999,-464.8131729125975]},
+                          {"from":-6, "to":-7, "fromPort":"R", "toPort":"T", "points":[313.5535125732422,-412.99999999999983,323.5535125732422,-412.99999999999983,324.3690719604492,-412.99999999999983,324.3690719604492,-475.75089721679717,570.25,-475.75089721679717,570.25,-465.75089721679717]},
+                          {"from":-7, "to":-8, "fromPort":"R", "toPort":"T", "points":[818.8153686523438,-406.0000000000003,828.8153686523438,-406.0000000000003,1451.6672973632812,-406.0000000000003,1451.6672973632812,-475.8754486083984,1104.25,-475.8754486083984,1104.25,-465.8754486083984]},
+                          {"from":-5, "to":-2, "fromPort":"B", "toPort":"L", "points":[-228.75000000000006,-360.68682708740255,-228.75000000000006,-350.68682708740255,-228.75000000000006,-315.0000000000002,-224.25080871582037,-315.0000000000002,-219.75161743164068,-315.0000000000002,-209.75161743164068,-315.0000000000002]},
+                          {"from":-5, "to":-9, "fromPort":"B", "toPort":"L", "points":[-228.75000000000006,-360.68682708740255,-228.75000000000006,-350.68682708740255,-228.75000000000006,-243.00000000000003,-224.2776489257812,-243.00000000000003,-219.80529785156233,-243.00000000000003,-209.80529785156233,-243.00000000000003]},
+                          {"from":-5, "to":-10, "fromPort":"B", "toPort":"L", "points":[-228.75000000000006,-360.68682708740255,-228.75000000000006,-350.68682708740255,-228.75000000000006,-168.00000000000003,-223.73613357543954,-168.00000000000003,-218.72226715087902,-168.00000000000003,-208.72226715087902,-168.00000000000003]},
+                          {"from":-5, "to":-12, "fromPort":"B", "toPort":"L", "points":[-228.75000000000006,-360.68682708740255,-228.75000000000006,-350.68682708740255,-228.75000000000006,-102,-223.2880325317383,-102,-217.82606506347656,-102,-207.82606506347656,-102]},
+                          {"from":-12, "to":-11, "fromPort":"B", "toPort":"T", "points":[ -108,-65.12455139160157,-108,-55.12455139160157,-108,-45.99999999999999,-108.00000000000011,-45.99999999999999,-108.00000000000011,-36.875448608398415,-108.00000000000011,-26.875448608398415 ]}
+                         ]}
+    </textarea>
+    <button onclick="makeSVG()">Render as SVG</button>
+    <div id="SVGArea"></div>
+  </div>
+  
+</div>
+<!-- /******************** END HOME MAIN ************************/ -->
 </div>
 
 </div>
@@ -356,6 +428,7 @@ foreach (jeeObject::all() as $object) {
 
 <?php
 include_file('desktop', 'scenario', 'js');
+include_file('desktop', 'scenario_flowchart', 'js');
 include_file('3rdparty', 'jquery.sew/jquery.caretposition', 'js');
 include_file('3rdparty', 'jquery.sew/jquery.sew.min', 'js');
 ?>
