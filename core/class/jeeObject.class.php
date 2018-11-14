@@ -797,5 +797,36 @@ class jeeObject {
 		return $this;
 	}
 
+  /********************BEGIN HOME MAIN************************/
+	public static function buildHtmlOptionSelectTree($_object = null, $_visible = true) {
+    $previousParentNumber = null;
+    $previousParentName =   null;
+		$allObject =            array();
+    $return =               '';
+    
+		if (!is_object($_object)) {
+			$object_list = self::rootObject(true, $_visible);
+		} else {
+			$object_list = $_object->getChild($_visible);
+		}
+		if (is_array($object_list) && count($object_list) > 0) {
+			foreach ($object_list as $object) {
+				$allObject[] = $object;
+				$allObject = array_merge($allObject, self::buildTree($object, $_visible));
+			}
+		}
+    
+    foreach ($allObject as $object) {
+      $margin = '';
+      for ($i = 0; $i < $object->getConfiguration('parentNumber'); $i++) {
+        $margin .= '&nbsp;&nbsp;&nbsp;';
+      }
+        
+      $return .= '<option value="' . $object->getId() . '">' . $margin . $object->getHumanName() . '</option>';
+    }
+    
+    return $return;
+	}
+  /******************** END HOME MAIN ************************/  
 }
 ?>

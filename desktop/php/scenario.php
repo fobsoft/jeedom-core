@@ -186,12 +186,8 @@ if (count($totalScenario) == 0) {
             <div class="col-xs-6">
               <select class="scenarioAttr form-control" data-l1key="object_id">
                 <option value="">{{Aucun}}</option>
-                <?php
-foreach (jeeObject::all() as $object) {
-	echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
-}
-?>
-             </select>
+                <?php echo jeeObject::buildHtmlOptionSelectTree(null, false);?>
+              </select>
            </div>
          </div>
          <div class="form-group">

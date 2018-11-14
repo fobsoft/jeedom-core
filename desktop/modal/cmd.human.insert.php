@@ -16,12 +16,8 @@ if (!isConnect()) {
             <td class="mod_insertCmdValue_object">
                 <select class='form-control'>
                     <option value="-1">{{Aucun}}</option>
-                    <?php
-foreach (jeeObject::all() as $object) {
-	echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
-}
+                  <?php echo jeeObject::buildHtmlOptionSelectTree(null, false);?>
 
-?>
                 </select>
             </td>
             <td class="mod_insertCmdValue_eqLogic"></td>
@@ -67,7 +63,8 @@ foreach (jeeObject::all() as $object) {
         if (cmd_name == undefined) {
             return '';
         }
-        return '#[' + object_name + '][' + equipement_name + '][' + cmd_name + ']#';
+        //******************** HOME MAIN ************************/
+        return '#[' + object_name.replace(/&nbsp;/g, "") + '][' + equipement_name + '][' + cmd_name + ']#';
     }
 
     mod_insertCmd.getCmdId = function () {

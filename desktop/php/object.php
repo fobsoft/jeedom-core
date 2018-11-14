@@ -74,11 +74,7 @@ foreach ($allObject as $object) {
           <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
             <select class="form-control objectAttr" data-l1key="father_id">
               <option value="">{{Aucun}}</option>
-              <?php
-foreach ($allObject as $object) {
-	echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
-}
-?>
+              <?php echo jeeObject::buildHtmlOptionSelectTree(null, false); ?>
            </select>
          </div>
        </div>
