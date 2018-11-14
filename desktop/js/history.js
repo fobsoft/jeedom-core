@@ -117,7 +117,7 @@
                 $('#div_alert').showAlert({message: data.result, level: 'danger'});
                 return;
             }
-            $('#div_alert').showAlert({message: '{{Historique supprimÃ© avec succÃ¨s}}', level: 'success'});
+            $('#div_alert').showAlert({message: '{{Historique supprimé avec succès}}', level: 'success'});
             li = $('li[data-cmd_id=' + _cmd_id + ']');
             if (li.hasClass('active')) {
                 li.find('.history').click();
@@ -287,12 +287,12 @@ $('#bt_configureTimelineCommand').on('click',function(){
 });
 
 $('#bt_configureTimelineScenario').on('click',function(){
-  $('#md_modal').dialog({title: "{{RÃ©sumÃ© scÃ©nario}}"});
+  $('#md_modal').dialog({title: "{{Résumé scénario}}"});
   $("#md_modal").load('index.php?v=d&modal=scenario.summary').dialog('open');
 });
 
 $('#div_visualization').on('click','.bt_scenarioLog',function(){
-    $('#md_modal').dialog({title: "{{Log d'exÃ©cution du scÃ©nario}}"});
+    $('#md_modal').dialog({title: "{{Log d'exécution du scénario}}"});
     $("#md_modal").load('index.php?v=d&modal=scenario.log.execution&scenario_id=' + $(this).closest('.scenario').attr('data-id')).dialog('open');
 });
 
