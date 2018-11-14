@@ -310,7 +310,7 @@ class network {
 		}
 		copy(__DIR__ . '/../../script/ca_dns.crt', $path_ca);
 		if (!file_exists($path_ca)) {
-			throw new Exception(__('Impossible de crÃ©er le fichier  : ', __FILE__) . $path_ca);
+			throw new Exception(__('Impossible de créer le fichier  : ', __FILE__) . $path_ca);
 		}
 		return $openvpn;
 	}
@@ -427,7 +427,7 @@ class network {
 		}
 		$gw = shell_exec("ip route show default | awk '/default/ {print $3}'");
 		if ($gw == '') {
-			log::add('network', 'error', __('Souci rÃ©seau dÃ©tectÃ©, redÃ©marrage du rÃ©seau', __FILE__));
+			log::add('network', 'error', __('Souci réseau détecté, redémarrage du réseau', __FILE__));
 			exec(system::getCmdSudo() . 'service networking restart');
 			return;
 		}
@@ -435,7 +435,8 @@ class network {
 		if ($return_val == 0) {
 			return;
 		}
-		log::add('network', 'error', __('Souci rÃ©seau dÃ©tectÃ©, redÃ©marrage du rÃ©seau', __FILE__));
+		log::add('network', 'error', __('Souci réseau détecté, redémarrage du réseau', __FILE__));
 		exec(system::getCmdSudo() . 'service networking restart');
 	}
 }
+?>

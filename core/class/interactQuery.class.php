@@ -926,3 +926,4 @@ class interactQuery {
 	}
 
 }
+?>

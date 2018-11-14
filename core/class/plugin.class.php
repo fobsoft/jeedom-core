@@ -1041,3 +1041,4 @@ class plugin {
 	}
 
 }
+?>

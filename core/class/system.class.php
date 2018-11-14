@@ -172,3 +172,4 @@ class system {
 		return exec('php ' . $arguments);
 	}
 }
+?>

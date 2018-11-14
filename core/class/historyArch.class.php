@@ -24,3 +24,4 @@ class historyArch extends history {
 	protected $_tableName = 'historyArch';
 
 }
+?>

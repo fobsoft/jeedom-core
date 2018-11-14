@@ -716,3 +716,4 @@ class interactDef {
 	}
 
 }
+?>
