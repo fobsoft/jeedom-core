@@ -249,11 +249,13 @@ class scenario {
 			if (is_object($_event)) {
 				$scenarios1 = self::byTrigger($_event->getId());
 				$trigger = '#' . $_event->getId() . '#';
-				$message = __('Scénario exécuté automatiquement sur événement venant de : ', __FILE__) . $_event->getHumanName();
+				//********************   HOME MAIN   ************************
+        $message = __('Exécuté par : ', __FILE__) . $_event->getHumanName();
 			} else {
 				$scenarios1 = self::byTrigger($_event);
 				$trigger = $_event;
-				$message = __('Scénario exécuté sur événement : #', __FILE__) . $_event . '#';
+				//********************   HOME MAIN   ************************
+				$message = __('Exécuté sur événement : #', __FILE__) . $_event . '#';
 			}
 			if (is_array($scenarios1) && count($scenarios1) > 0) {
 				foreach ($scenarios1 as $scenario) {
@@ -263,7 +265,8 @@ class scenario {
 				}
 			}
 		} else {
-			$message = __('Scénario exécuté automatiquement sur programmation', __FILE__);
+  		//********************   HOME MAIN   ************************
+			$message = __('Exécuté automatiquement sur programmation', __FILE__);
 			$scenarios = scenario::schedule();
 			$trigger = 'schedule';
 			if (jeedom::isDateOk()) {
@@ -320,7 +323,7 @@ class scenario {
 			return;
 		}
 		$scenarioElement = scenarioElement::byId($_options['scenarioElement_id']);
-		$scenario->setLog(__('************Lancement sous tâche**************', __FILE__));
+		$scenario->setLog(__('************Lancement sous tâche [ID::'.$_options['cron_execution_id'].']**************', __FILE__));
 		if (isset($_options['tags']) && is_array($_options['tags']) && count($_options['tags']) > 0) {
 			$scenario->setTags($_options['tags']);
 			$scenario->setLog(__('Tags : ', __FILE__) . json_encode($scenario->getTags()));
@@ -393,10 +396,11 @@ class scenario {
 				foreach ($scenario->getTrigger() as $trigger) {
 					$trigger_list .= cmd::cmdToHumanReadable($trigger) . '_';
 				}
-				preg_match_all("/#([0-9]*)#/", $trigger_list, $matches);foreach ($matches[1] as $cmd_id) {
+				preg_match_all("/#([0-9]*)#/", $trigger_list, $matches);
+        foreach ($matches[1] as $cmd_id) {
 					if (is_numeric($cmd_id)) {
 						if ($_needsReturn) {
-							$return[] = array('detail' => 'Scénario ' . $scenario->getName() . ' du groupe ' . $group, 'help' => 'Déclencheur du scénario', 'who' => '#' . $cmd_id . '#');
+							$return[] = array('detail' => 'Scénario ' . $scenario->getHumanName() . ' du groupe ' . $group, 'help' => 'Déclencheur du scénario', 'who' => '#' . $cmd_id . '#');
 						} else {
 							log::add('scenario', 'error', __('Un déclencheur du scénario : ', __FILE__) . $scenario->getHumanName() . __(' est introuvable', __FILE__));
 						}

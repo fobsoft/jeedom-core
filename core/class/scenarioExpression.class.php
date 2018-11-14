@@ -811,7 +811,7 @@ class scenarioExpression {
 		$date2 = new DateTime($_date2);
 		$interval = $date1->diff($date2);
 		if ($_format == 's') {
-			return $interval->format('%s') + 60 * $interval->format('%i') + 3600 * $interval->format('%h') + 86400 * $interval->format('%a');
+			return $interval->format('%s') + 60 * $interval->format('%m') + 3600 * $interval->format('%h') + 86400 * $interval->format('%a');
 		}
 		if ($_format == 'm') {
 			return $interval->format('%i') + 60 * $interval->format('%h') + 1440 * $interval->format('%a');
@@ -1113,7 +1113,7 @@ class scenarioExpression {
 			if ($this->getType() == 'element') {
 				$element = scenarioElement::byId($this->getExpression());
 				if (is_object($element)) {
-					$this->setLog($scenario, __('Exécution d\'un bloc élément : ', __FILE__) . $this->getExpression());
+					//$this->setLog($scenario, __('Exécution d\'un bloc élément : ', __FILE__) . $this->getExpression());
 					return $element->execute($scenario);
 				}
 				return;
@@ -1328,7 +1328,7 @@ class scenarioExpression {
 					} catch (Error $ex) {
 						$result = $options['value'];
 					}
-					$this->setLog($scenario, __('Affectation de la variable ', __FILE__) . $this->getOptions('name') . __(' => ', __FILE__) . $options['value'] . ' = ' . $result);
+					$this->setLog($scenario, '[SET GLOBAL VAR] ' . $this->getOptions('name') . __(' => ', __FILE__) . $options['value'] . ' = ' . $result);
 					$dataStore = new dataStore();
 					$dataStore->setKey($this->getOptions('name'));
 					$dataStore->setValue($result);

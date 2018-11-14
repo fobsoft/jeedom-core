@@ -268,7 +268,7 @@ class scenarioElement {
 			$cron->setOnce(1);
 			$cron->setSchedule(cron::convertDateToCron($next));
 			$cron->save();
-			$_scenario->setLog(__('Tâche : ', __FILE__) . $this->getId() . __(' programmée à : ', __FILE__) . date('Y-m-d H:i:00', $next));
+			$_scenario->setLog('[PROG] Tâche (ID::'.$executionId.') : ' . $this->getId() . __(' programmée à : ', __FILE__) . date('Y-m-d H:i:00', $next) . ' Option::'.$cron->getOption);
 			return true;
 		}
 	}

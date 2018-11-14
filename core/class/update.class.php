@@ -352,6 +352,7 @@ class update {
 				$this->postInstallUpdate($info);
 			}
 		}
+    log::add('update', 'alert', 'END MISE À JOUR: ');
 		$this->refresh();
 		$this->checkUpdate();
 	}

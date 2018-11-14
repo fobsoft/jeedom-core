@@ -67,7 +67,7 @@ class scenarioSubElement {
 			return;
 		}
 		if ($this->getSubtype() == 'action') {
-			$_scenario->setLog(__('Exécution du sous-élément de type [action] : ', __FILE__) . $this->getType());
+			//$_scenario->setLog(__('Exécution du sous-élément de type [action] : ', __FILE__) . $this->getType());
 			$return = true;
 			foreach ($this->getExpression() as $expression) {
 				$return = $expression->execute($_scenario);
@@ -75,7 +75,7 @@ class scenarioSubElement {
 			return $return;
 		}
 		if ($this->getSubtype() == 'condition') {
-			$_scenario->setLog(__('Exécution du sous-élément de type [condition] : ', __FILE__) . $this->getType());
+			//$_scenario->setLog(__('Exécution du sous-élément de type [condition] : ', __FILE__) . $this->getType());
 			foreach ($this->getExpression() as $expression) {
 				return $expression->execute($_scenario);
 			}
