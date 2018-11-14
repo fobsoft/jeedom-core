@@ -55,3 +55,4 @@ $cache['scenarioExpression']->execute($cache['scenario']);
 if ($cache['scenario'] != null) {
 	$cache['scenario']->persistLog();
 }
+?>

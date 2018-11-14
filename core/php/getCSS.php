@@ -17,4 +17,4 @@
  */
 
 require_once 'getResource.php';
-
+?>

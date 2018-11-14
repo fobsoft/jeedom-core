@@ -61,3 +61,4 @@ if (init('scenarioElement_id') != '') {
 		die();
 	}
 }
+?>

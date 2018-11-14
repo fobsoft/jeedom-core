@@ -1354,3 +1354,4 @@ function unautorizedInDemo($_user = null) {
 		throw new Exception(__('Cette action n\'est pas autorisée en mode démo', __FILE__));
 	}
 }
+?>

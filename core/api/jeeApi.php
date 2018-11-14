@@ -1032,3 +1032,4 @@ try {
 	log::add('api', 'info', 'Error code ' . $errorCode . ' : ' . $message);
 	$jsonrpc->makeError($errorCode, $message);
 }
+?>

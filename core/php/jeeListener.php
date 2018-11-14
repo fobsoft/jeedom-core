@@ -60,3 +60,4 @@ if (init('listener_id') == '') {
 	}
 	$listener->execute(init('event_id'), trim(init('value'), "'"), trim(init('datetime'), "'"));
 }
+?>

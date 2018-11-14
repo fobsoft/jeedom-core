@@ -51,3 +51,4 @@ switch ($type) {
 	default:
 		break;
 }
+?>

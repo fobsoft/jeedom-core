@@ -105,3 +105,4 @@ if ($enable) {
 } else {
 	echo "NOT_ENABLED\n";
 }
+?>
