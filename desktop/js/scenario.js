@@ -1284,6 +1284,28 @@ function addSubElement(_subElement, _pColor) {
     retour += '  </div>';
     retour += '  <div style="display:table-cell; width: 15px; vertical-align: top;"><i class="fas fa-minus-circle pull-right cursor bt_removeElement" style="position : relative;z-index : 2;"></i></div>';
     break;
+    case 'while' :
+      retour += '  <input class="subElementAttr" data-l1key="subtype" style="display : none;" value="condition"/>';
+      retour += '  <div style="display:table-cell; width: 30px;vertical-align: top; padding-top: 5px;">';
+      retour += '     <i class="fas fa-arrows-alt-v pull-left cursor bt_sortable"></i>';
+      if(!isset(_subElement.options) || !isset(_subElement.options.enable) || _subElement.options.enable == 1){
+        retour += '<input type="checkbox" class="subElementAttr" data-l1key="options" data-l2key="enable" checked title="{{Décocher pour désactiver l\'élément}}" style="margin-right : 0px;"/>';
+      }else{
+        retour += '<input type="checkbox" class="subElementAttr" data-l1key="options" data-l2key="enable" title="{{Décocher pour désactiver l\'élément}}" style="margin-right : 0px;"/>';
+      }
+      retour += '  </div>';
+      retour += '  <div style="display:table-cell; width: 120px;vertical-align: top;">';
+      retour += '     <legend style="margin-bottom: 0px; color : white;border : none;">{{TANT QUE}}</legend>';
+      retour += '  </div>';
+      retour += '  <div class="expressions" style="display:table-cell; padding-bottom: 10px;">';
+      var expression = {type: 'condition'};
+      if (isset(_subElement.expressions) && isset(_subElement.expressions[0])) {
+        expression = _subElement.expressions[0];
+      }
+      retour += addExpression(expression);
+      retour += '  </div>';
+      retour += '  <div style="display:table-cell; width: 15px; vertical-align: top;"><i class="fas fa-minus-circle pull-right cursor bt_removeElement" style="position : relative;z-index : 2;"></i></div>';
+      break;
     case 'in' :
     retour += '  <input class="subElementAttr" data-l1key="subtype" style="display : none;" value="condition"/>';
     retour += '  <div style="display:table-cell; width: 30px;vertical-align: top; padding-top: 5px;">';
@@ -1508,6 +1530,19 @@ function addElement(_element) {
       div += addSubElement({type: 'for'}, color);
       div += addSubElement({type: 'do'}, color);
     }
+    break;
+
+    case 'while' :
+      /********************   HOME MAIN   ************************/
+      if (isset(_element.subElements) && isset(_element.subElements)) {
+        for (var j in _element.subElements) {
+          div += addSubElement(_element.subElements[j], color);
+        }
+      } else {
+        div += addSubElement({type: 'while'}, color);
+        div += addSubElement({type: 'do'}, color);
+      }
+      
     break;
     case 'in' :
     if (isset(_element.subElements) && isset(_element.subElements)) {

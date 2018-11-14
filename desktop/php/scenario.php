@@ -382,6 +382,7 @@ foreach (jeeObject::all() as $object) {
             <option value="if">{{Si/Alors/Sinon}}</option>
             <option value="action">{{Action}}</option>
             <option value="for">{{Boucle}}</option>
+            <option value="while">{{Tant que}}</option>
             <option value="in">{{Dans}}</option>
             <option value="at">{{A}}</option>
             <option value="code">{{Code}}</option>
@@ -398,9 +399,17 @@ foreach (jeeObject::all() as $object) {
         </div>
 
         <div class="alert alert-info addElementTypeDescription for" style="display:none;">
-          Une boucle permet de réaliser une action de façon répétée un certain nombre de fois. Par exemple : Permet de répéter une action de 1 à X, c’est-à-dire X fois.
+          Une boucle "For" permet de réaliser une action de façon répétée un certain nombre de fois. Par exemple : Permet de répéter une action de 1 à X, c’est-à-dire X fois.
         </div>
 
+
+        <div class="alert alert-info addElementTypeDescription while" style="display:none;">
+          Une boucle "While" permet de réaliser une ou des action(s) de façon répétée tant que la condition est valide.<br><br>
+          Valeur disponible
+          <ul>
+            <li>#while[nbrLoop]#:  Nombre de boucle deja execute</li>
+          </ul>
+        </div>
         <div class="alert alert-info addElementTypeDescription in" style="display:none;">
          Permet de faire une action dans X min. Par exemple : Dans 5 min, éteindre la lumière.
        </div>

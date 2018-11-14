@@ -197,6 +197,31 @@ class scenarioElement {
 				$return = $this->getSubElement('do')->execute($_scenario);
 			}
 			return $return;
+		} else if ($this->getType() == 'while') {
+			if ($this->getSubElement('while')->getOptions('enable', 1) == 0) {
+				return true;
+			}
+ 
+      $nbrLoop= 0;
+      $return = true;
+    
+      while ($resultWhile = $this->getSubElement('while')->execute($_scenario)) {
+        if (is_string($resultWhile) && strlen($resultWhile) > 1) {
+          $_scenario->setLog(__('[ERROR] Expression non valide : ', __FILE__) . $resultWhile);
+          return;
+        }
+        else if ($nbrLoop > 100) {
+          $_scenario->setLog(__('[ERROR] Maximum de loop effectue', __FILE__));
+          return;
+        }
+        
+        $return = $this->getSubElement('do')->execute($_scenario)? $return:false;
+        $nbrLoop++;
+        
+        sleep(1);
+      }
+
+      return $return;
 		} else if ($this->getType() == 'in') {
 			if ($this->getSubElement('in')->getOptions('enable', 1) == 0) {
 				return true;
@@ -425,6 +450,9 @@ class scenarioElement {
 					break;
 				case 'at':
 					$return .= __('A', __FILE__);
+					break;
+				case 'while':
+					$return .= __('TANT QUE', __FILE__);
 					break;
 				default:
 					$return .= $subElement->getType();
