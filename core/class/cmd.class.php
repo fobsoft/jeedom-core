@@ -950,9 +950,11 @@ class cmd {
 			}
 			$str_option = '';
 			if (is_array($options) && ((count($options) > 1 && isset($options['uid'])) || count($options) > 0)) {
-				log::add('event', 'info', __('Exécution de la commande ', __FILE__) . $this->getHumanName() . __(' avec les paramètres ', __FILE__) . json_encode($options, true));
+				/***********************HOME MAIN***************************/
+        log::add('event', 'info', '[Exec CMD] ('.str_pad($this->getId(),4,0,STR_PAD_LEFT).')' . $this->getHumanName() . __(' avec les paramètres ', __FILE__) . json_encode($options, true) . (isset($_scenario)? ' par le scenario '.$_scenario->getVariableElement("#scenarioHumanName#"):''));
 			} else {
-				log::add('event', 'info', __('Exécution de la commande ', __FILE__) . $this->getHumanName());
+        /***********************HOME MAIN***************************/
+				log::add('event', 'info', '[Exec CMD] ('.str_pad($this->getId(),4,0,STR_PAD_LEFT).')' . $this->getHumanName() . (isset($_scenario)? ' par le scenario '.$_scenario->getVariableElement("#scenarioHumanName#"):''));
 			}
 
 			if ($this->getConfiguration('timeline::enable')) {
@@ -1235,18 +1237,25 @@ class cmd {
 
 	public function event($_value, $_datetime = null, $_loop = 1) {
 		if ($_loop > 4 || $this->getType() != 'info') {
+      /******************** HOME MAIN************************/
+      log::add('event', 'info', $message . '-- WARNING BLOQUER POUR CAUSE DE REPETITION');
 			return;
 		}
 		$eqLogic = $this->getEqLogic();
 		if (!is_object($eqLogic) || $eqLogic->getIsEnable() == 0) {
+      /******************** HOME MAIN************************/
+      log::add('event', 'info', $message . '-- ANNULE, EQUIPEMENT DESACTIVE');
 			return;
 		}
 		$value = $this->formatValue($_value);
 		if ($this->getSubType() == 'numeric' && ($value > $this->getConfiguration('maxValue', $value) || $value < $this->getConfiguration('minValue', $value)) && strpos($value, 'error') === false) {
-			log::add('cmd', 'info', __('La commande n\'est pas dans la plage de valeur autorisée : ', __FILE__) . $this->getHumanName() . ' => ' . $value);
+      /******************** HOME MAIN************************/
+      log::add('event', 'info', $message . '-- ANNULE, LA VALEUR N\'EST PAS DANS LA PLAGE AUTHORISE, VOIR MIN/MAX CONFIGURE POUR LA COMMANDE');
 			return;
 		}
 		if ($this->getConfiguration('denyValues') != '' && in_array($value, explode(';', $this->getConfiguration('denyValues')))) {
+      /******************** HOME MAIN************************/
+      log::add('event', 'info', $message . '-- ANNULE, LA VALEUR N\'EST PAS AUTHORISE, VOIR CONFIGURATION COMMANDE/CONFIGURATION/GESTION DES VALEURS');
 			return;
 		}
 		$oldValue = $this->execCmd();
@@ -1268,6 +1277,10 @@ class cmd {
 		if ($repeat && $this->getConfiguration('repeatEventManagement', 'auto') == 'never') {
 			$this->addHistoryValue($value, $this->getCollectDate());
 			$eqLogic->emptyCacheWidget();
+
+      /******************** HOME MAIN************************/
+      log::add('event', 'info', $message . '-- ANNULE, REPETITION NON AUTORISE');
+
 			event::adds('cmd::update', array(array('cmd_id' => $this->getId(), 'value' => $value, 'display_value' => $display_value, 'valueDate' => $this->getValueDate(), 'collectDate' => $this->getCollectDate())));
 			return;
 		}
@@ -1284,6 +1297,9 @@ class cmd {
 		if (!$repeat) {
 			$this->setCache(array('value' => $value, 'valueDate' => $this->getValueDate()));
 			scenario::check($this);
+			
+      /******************** HOME MAIN************************/
+      log::add('event', 'info', 'Refresh cmd ' . $this->getId() . ' with value ' . $value);
 			$eqLogic->emptyCacheWidget();
 			$level = $this->checkAlertLevel($value);
 			$events = array(array('cmd_id' => $this->getId(), 'value' => $value, 'display_value' => $display_value, 'valueDate' => $this->getValueDate(), 'collectDate' => $this->getCollectDate(), 'alertLevel' => $level));
