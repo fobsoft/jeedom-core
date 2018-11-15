@@ -1154,7 +1154,7 @@ function addSubElement(_subElement, _pColor) {
     _subElement.options = {};
   }
   var noSortable = '';
-  if (_subElement.type == 'if' || _subElement.type == 'for' || _subElement.type == 'code') {
+  if (_subElement.type == 'if' || _subElement.type == 'for' || _subElement.type == 'code' || _subElement.type == 'while') {
     noSortable = 'noSortable';
   }
   var displayElse = 'table';
