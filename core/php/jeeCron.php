@@ -40,16 +40,29 @@ if (init('cron_id') != '') {
 	if (jeedom::isStarted() && config::byKey('enableCron', 'core', 1, true) == 0) {
 		die(__('Tous les crons sont actuellement désactivés', __FILE__));
 	}
-	$datetime = date('Y-m-d H:i:s');
-	$datetimeStart = strtotime('now');
+
 	$cron = cron::byId(init('cron_id'));
 	if (!is_object($cron)) {
 		die();
 	}
 
+	$datetime =       date('Y-m-d H:i:s');
+	$datetimeStart =  $cron->getScheduleTimestamp();
+  
 	try {
-		$cron->setState('run');
 		$cron->setPID(getmypid());
+    
+    // Wait for start
+		$cron->setState('waitToStart');
+    if (isset($datetimeStart) && ($dif = strtotime($datetimeStart) - strtotime($datetime)) > 0) {
+      sleep($dif);
+    }
+    else {
+      $datetimeStart = strtotime('now');
+    }
+  
+    // Start
+		$cron->setState('run');
 		$cron->setLastRun($datetime);
 		$option = $cron->getOption();
 		if ($cron->getClass() != '') {

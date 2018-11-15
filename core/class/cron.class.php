@@ -1,4 +1,10 @@
 <?php
+/********************BEGIN HOME MAIN************************
+MERGE
+  Change private for protected value
+  Reload change
+  Merge modification
+ ******************** END HOME MAIN ************************/
 
 /* This file is part of Jeedom.
  *
@@ -19,19 +25,22 @@
 /* * ***************************Includes********************************* */
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
-class cron {
+class cron extends customCron {
 	/*     * *************************Attributs****************************** */
 
-	private $id;
-	private $enable = 1;
-	private $class = '';
-	private $function;
-	private $schedule = '';
-	private $timeout;
-	private $deamon = 0;
-	private $deamonSleepTime;
-	private $option;
-	private $once = 0;
+	protected $id;
+	protected $enable = 1;
+	protected $class = '';
+	protected $function;
+	protected $schedule = '';
+	protected $timeout;
+	protected $deamon = 0;
+	protected $deamonSleepTime;
+	protected $option;
+	protected $once = 0;
+
+  // ***********************HOME MAIN***************************
+  protected $scheduleTimestamp = '';
 
 	/*     * ***********************Méthodes statiques*************************** */
 
@@ -270,7 +279,7 @@ class cron {
 	 * @return boolean
 	 */
 	public function running() {
-		if (($this->getState() == 'run' || $this->getState() == 'stoping') && $this->getPID() > 0) {
+		if (($this->getState() == 'waitToStart' || $this->getState() == 'run' || $this->getState() == 'stoping') && $this->getPID() > 0) {
 			if (posix_getsid($this->getPID()) && (!file_exists('/proc/' . $this->getPID() . '/cmdline') || strpos(@file_get_contents('/proc/' . $this->getPID() . '/cmdline'), 'cron_id=' . $this->getId()) !== false)) {
 				return true;
 			}
@@ -560,6 +569,23 @@ class cron {
 	public function setCache($_key, $_value = null) {
 		cache::set('cronCacheAttr' . $this->getId(), utils::setJsonAttr(cache::byKey('cronCacheAttr' . $this->getId())->getValue(), $_key, $_value));
 	}
+}
 
+class customCron {
+  
+	/*     * ***********************Méthodes statiques*************************** */ 
+
+
+	/*     * *********************Méthodes d'instance************************* */
+
+	public function getScheduleTimestamp() {
+		return $this->scheduleTimestamp;
+	}
+    
+  public function setScheduleTimestamp($nextStartTimestamp) {
+    $this->schedule =           cron::convertDateToCron($nextStartTimestamp);
+    $this->scheduleTimestamp =  date('Y-m-d H:i:s', $nextStartTimestamp);
+    return $this;
+  }
 }
 ?>
