@@ -5,25 +5,41 @@ if (!isConnect()) {
 ?>
 <center>
     <select id="mod_actionValue_sel" class="form-control">
-        <option value="sleep">{{Pause}}</option>
-        <option value="variable">{{Variable}}</option>
-	<option value="delete_variable">{{Supprimer une variable}}</option>
-        <option value="scenario">{{Scénario}}</option>
-        <option value="stop" class="scenarioOnly">{{Stop}}</option>
-        <option value="wait">{{Attendre}}</option>
-        <option value="gotodesign">{{Aller au design}}</option>
-        <option value="log" class="scenarioOnly">{{Ajouter un log}}</option>
-        <option value="message">{{Créer un message}}</option>
-        <option value="equipement">{{Activer/Désactiver Masquer/Afficher un équipement}}</option>
-        <option value="ask">{{Faire une demande}}</option>
+      <optgroup label="Systeme">
         <option value="jeedom_poweroff">{{Arrêter}} <?php echo config::byKey('product_name'); ?></option>
         <option value="jeedom_reboot">{{Reémarrer}} <?php echo config::byKey('product_name'); ?></option>
-        <option value="scenario_return" class="scenarioOnly">{{Retourner un texte/une donnée}}</option>
-        <option value="icon" class="scenarioOnly">{{Icône}}</option>
-        <option value="alert">{{Alerte}}</option>
-        <option value="popup">{{Pop-up}}</option>
-        <option value="report">{{Rapport}}</option>
         <option value="remove_inat">{{Supprimer bloc DANS/A programmé}}</option>
+      </optgroup>
+      <optgroup label="Date & Time">
+        <option value="sleep">{{Pause}}</option>
+        <option value="wait">{{Attendre}}</option>
+      </optgroup>
+      <optgroup label="Flow">
+        <option value="stop" class="scenarioOnly">{{Stop}}</option>
+        <option value="log" class="scenarioOnly">{{Ajouter un log}}</option>
+        <option value="gotodesign">{{Aller au design}}</option>
+        <option value="scenario_return" class="scenarioOnly">{{Retourner un texte/une donnée}}</option>
+      </optgroup>
+      <optgroup label="General">
+        <option value="variable">{{Variable}}</option>
+	      <option value="delete_variable">{{Supprimer une variable}}</option>
+      </optgroup>
+      <optgroup label="Interface">
+        <option value="message">{{Créer un message}}</option>
+        <option value="ask">{{Faire une demande}}</option>
+        <option value="popup">{{Pop-up}}</option>
+        <option value="alert">{{Alerte}}</option>
+        <option value="report">{{Rapport}}</option>
+      </optgroup>
+      <optgroup label="Scenario">
+        <option value="scenario">{{Scénario}}</option>
+        <option value="icon" class="scenarioOnly">{{Icône}}</option>
+      </optgroup>
+      <optgroup label="Equipement">
+        <option value="equipement">{{Activer/Désactiver Masquer/Afficher un équipement}}</option>
+      </optgroup>
+      <optgroup label="Commande">
+      </optgroup>
     </select>
 </center>
 <br/>
