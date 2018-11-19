@@ -923,7 +923,7 @@ class cmd {
 	 * @return command result
 	 * @throws Exception
 	 */
-	public function execCmd($_options = null, $_sendNodeJsEvent = false, $_quote = false) {
+	public function execCmd($_options = null, $_sendNodeJsEvent = false, $_quote = false, $_scenario = null) {
 		if ($this->getType() == 'info') {
 			$this->setCollectDate($this->getCache('collectDate', date('Y-m-d H:i:s'), true));
 			$this->setValueDate($this->getCache('valueDate', date('Y-m-d H:i:s'), true));
@@ -934,6 +934,16 @@ class cmd {
 			throw new Exception(__('Equipement désactivé - impossible d\'exécuter la commande : ', __FILE__) . $this->getHumanName());
 		}
 		try {
+      /********************BEGIN HOME MAIN************************/
+      if (isset($_scenario)) {
+        $eqLogic->setConfiguration('execById', '#scenarioId' . $_scenario->getVariableElement('#scenarioId#') . '#');
+      }
+      else {
+        $eqLogic->setConfiguration('execById', '');
+      }
+      $eqLogic->save();
+      /******************** END HOME MAIN************************/
+      
 			if ($_options !== null && $_options !== '') {
 				$options = self::cmdToValue($_options);
 				if (is_json($_options)) {
@@ -1236,18 +1246,31 @@ class cmd {
 	}
 
 	public function event($_value, $_datetime = null, $_loop = 1) {
+		/********************BEGIN HOME MAIN************************/
+		$eqLogic =  $this->getEqLogic();
+    $value =    $this->formatValue($_value);
+		$message =  '[Event] (' . str_pad($this->getId(),4,0,STR_PAD_LEFT) . ') ' . $this->getHumanName() . __(' valeur : ', __FILE__) . $value;
+
+    $execById =     $eqLogic->getConfiguration('execById');
+		$lastCmdValue =	$this->getConfiguration('lastCmdValue');
+
+    // Pour savoir de qui vient l'action, peut-etre je vais devoir ajourter un l'aps de temps, genre ne pas faire cette verification si execbyid date de moins de 10 secondes. certain action peuvent etre graduelle
+    if ($execById != '' && $lastCmdValue != $value) {
+      $eqLogic->setConfiguration('execById', '');
+    }
+    /******************** END HOME MAIN ************************/
+    
 		if ($_loop > 4 || $this->getType() != 'info') {
       /******************** HOME MAIN************************/
       log::add('event', 'info', $message . '-- WARNING BLOQUER POUR CAUSE DE REPETITION');
 			return;
 		}
-		$eqLogic = $this->getEqLogic();
 		if (!is_object($eqLogic) || $eqLogic->getIsEnable() == 0) {
       /******************** HOME MAIN************************/
       log::add('event', 'info', $message . '-- ANNULE, EQUIPEMENT DESACTIVE');
 			return;
 		}
-		$value = $this->formatValue($_value);
+
 		if ($this->getSubType() == 'numeric' && ($value > $this->getConfiguration('maxValue', $value) || $value < $this->getConfiguration('minValue', $value)) && strpos($value, 'error') === false) {
       /******************** HOME MAIN************************/
       log::add('event', 'info', $message . '-- ANNULE, LA VALEUR N\'EST PAS DANS LA PLAGE AUTHORISE, VOIR MIN/MAX CONFIGURE POUR LA COMMANDE');
@@ -1288,7 +1311,6 @@ class cmd {
 		if ($repeat && ($this->getConfiguration('repeatEventManagement', 'auto') == 'always' || $this->getSubtype() == 'binary')) {
 			$repeat = false;
 		}
-		$message = __('Evènement sur la commande ', __FILE__) . $this->getHumanName() . __(' valeur : ', __FILE__) . $value;
 		if ($repeat) {
 			$message .= ' (répétition)';
 		}
