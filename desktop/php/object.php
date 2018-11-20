@@ -84,6 +84,22 @@ foreach ($allObject as $object) {
           <input type="number" class="objectAttr form-control" data-l1key="position" />
         </div>
       </div>
+        <!-- /********************BEGIN HOME MAIN************************/ -->
+        <div class="form-group">
+          <label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Type}}</label>
+          <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+            <select class="form-control objectAttr" data-l1key="configuration" data-l2key="generic_type">
+              <option value="">{{Aucun}}</option>
+              <option value="ROOM">{{Piece}}</option>
+              <option value="THERMOSTAT">{{Thermostat}}</option>
+              <optgroup label="Profil">
+                <option value="PROFIL_RESIDENT">{{Résident}}</option>
+                <option value="PROFIL_INVITE">{{Invité}}</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <!-- /******************** END HOME MAIN ************************/ -->
       <div class="form-group">
         <label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Visible}}</label>
         <div class="col-sm-1">
