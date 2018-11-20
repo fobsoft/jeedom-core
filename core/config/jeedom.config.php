@@ -198,6 +198,41 @@ $JEEDOM_INTERNAL_CONFIG = array(
 			'GENERIC_INFO' => array('name' => ' Générique', 'family' => 'Generic', 'type' => 'Info'),
 			'GENERIC_ACTION' => array('name' => ' Générique', 'family' => 'Generic', 'type' => 'Action'),
 			'DONT' => array('name' => 'Ne pas tenir compte de cette commande', 'family' => 'Generic', 'type' => 'All'),
+
+      //Securite
+			'MOTION' => array('name' => 'Mouvement', 'family' => 'Security', 'type' => 'Info'),
+			'PANIQUE' => array('name' => 'Panique', 'family' => 'Security', 'type' => 'Info'),
+			
+      //Lumiere
+			'DEL_STATE' =>          array('name' => 'Del Etat', 'family' => 'Lumière', 'type' => 'Info'),
+			'DEL_ON' =>             array('name' => 'Del Bouton On', 'family' => 'Lumière', 'type' => 'Action'),
+			'DEL_OFF' =>            array('name' => 'Del Bouton Off', 'family' => 'Lumière', 'type' => 'Action'),
+			'LIGHT_SLIDER' =>       array('name' => 'Lumière Slider', 'family' => 'Lumière', 'type' => 'Action'),
+			'LIGHT_SLIDER_ON' =>    array('name' => 'Lumière Slider On', 'family' => 'Lumière', 'type' => 'Action'),
+			'LIGHT_SLIDER_OFF' =>   array('name' => 'Lumière Slider Off', 'family' => 'Lumière', 'type' => 'Action'),
+			'ENERGY_LIGHT_STATE' => array('name' => 'Prise Lumière Etat', 'family' => 'Lumière', 'type' => 'Info'),
+			'ENERGY_LIGHT_ON' =>    array('name' => 'Prise Lumière Bouton On', 'family' => 'Lumière', 'type' => 'Action'),
+			'ENERGY_LIGHT_OFF' =>   array('name' => 'Prise Lumière Bouton Off', 'family' => 'Lumière', 'type' => 'Action'),
+      
+      //Communication
+			'SMS' =>    array('family' => 'Communication', 'name' => 'Message sms',   'type' => 'All'),
+			'MAIL' =>   array('family' => 'Communication', 'name' => 'Message email', 'type' => 'All'),
+			'VOICE' =>  array('family' => 'Communication', 'name' => 'Message vocal', 'type' => 'All'),
+      
+      //Piece
+			'PIECE_MODE_STATE' => array('name' => 'Mode', 'family' => 'Piece', 'type' => 'Info'),
+			'PIECE_MODE_SET_STATE' => array('name' => 'Mode', 'family' => 'Piece', 'type' => 'Action'),
+      
+      //Profil
+			'PROFIL_MODE_STATE' => array('name' => 'Mode', 'family' => 'Profil', 'type' => 'Info'),
+			'PROFIL_MODE_SET_STATE' => array('name' => 'Mode', 'family' => 'Profil', 'type' => 'Action'),
+
+      //Chauffage et climatisation
+			'THERMOSTAT_ON' => array('name' => 'Thermostat On', 'family' => 'Thermostat', 'type' => 'Action'),
+			'THERMOSTAT_OFF' => array('name' => 'Thermostat Off', 'family' => 'Thermostat', 'type' => 'Action'),
+			'THERMOSTAT_TEMPERATURE_OVER' => array('name' => 'Thermostat Température ambiante au dessus de celle desire', 'family' => 'Thermostat', 'type' => 'Info'),
+			'THERMOSTAT_TEMPERATURE_LOWER' => array('name' => 'Thermostat Température ambiante au dessous legerement de celle desire', 'family' => 'Thermostat', 'type' => 'Info'),
+			'THERMOSTAT_TEMPERATURE_ASK' => array('name' => 'Thermostat Température ambiante en dessous de celle desire', 'family' => 'Thermostat', 'type' => 'Info'),
 		),
 		'type' => array(
 			'info' => array(
