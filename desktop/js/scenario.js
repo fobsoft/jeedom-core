@@ -1507,6 +1507,12 @@ function addElement(_element) {
   previousLocY = previousLocY + 400;
   /******************** END HOME MAIN ************************/
   
+  /********************BEGIN HOME MAIN************************/
+  if (_element.type != 'action') {
+    div += '<textarea class="elementAttr form-control" style="height: 30px; font-size: 12px; " data-l1key="options" data-l2key="expression_desc" rows="1" style="resize:vertical;">' + init(_element.options.expression_desc) + '</textarea><br>';
+  }
+  /******************** END HOME MAIN ************************/
+  
   switch (_element.type) {
     case 'if' :
     if (isset(_element.subElements) && isset(_element.subElements)) {

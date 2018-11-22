@@ -136,6 +136,14 @@ class scenarioElement {
 			if ($this->getSubElement('if')->getOptions('enable', 1) == 0) {
 				return true;
 			}
+
+      /********************BEGIN HOME MAIN************************/
+      $expressionDesc = $this->getOptions('expression_desc');
+      
+      if (isset($expressionDesc) && $expressionDesc != '')
+        $_scenario->setLog('[VALID SI] ' . $expressionDesc . ' ('.$this->getId().')');
+      /******************** END HOME MAIN ************************/
+
 			$result = $this->getSubElement('if')->execute($_scenario);
 			if (is_string($result) && strlen($result) > 1) {
 				$_scenario->setLog(__('Expression non valide : ', __FILE__) . $result);
