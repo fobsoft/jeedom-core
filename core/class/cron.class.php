@@ -227,6 +227,10 @@ class cron extends customCron {
 	 * @return boolean
 	 */
 	public function save() {
+    // Set default
+    if ($this->getCache('lastRun') == '' || $this->getCache('lastRun') == null)
+			$this->setLastRun(date('Y-m-d H:i:s'));
+
 		return DB::save($this, false, true);
 	}
 
