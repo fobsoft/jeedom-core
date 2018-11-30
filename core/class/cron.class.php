@@ -234,6 +234,17 @@ class cron extends customCron {
 		return DB::save($this, false, true);
 	}
 
+  public function removeCronList($_class, $_function, $_cron_execution_id) { 
+    $crons = cron::searchClassAndFunction($_class, $_function, '"cron_execution_id":' . $_cron_execution_id);
+    if (is_array($crons)) {
+      foreach ($crons as $cron) {
+        if ($cron->getState() != 'run') {
+          $cron->remove();
+        }
+      }
+    }
+  }
+  
 	/**
 	 * Remove cron object
 	 * @return boolean
