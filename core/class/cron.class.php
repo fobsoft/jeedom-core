@@ -592,6 +592,27 @@ class customCron {
       }
     }
   }
+  
+	public function saveUnique() {
+    $options = $this->getOption();
+    
+    cron::removeCronList($this->getClass(), $this->getFunction(), $options['cron_execution_id']);
+		$result = $this->save();
+    
+    // Si next execute est plus petit qu'une minute call jeeCron directement
+    $datetime =       date('Y-m-d H:i:s');
+    $datetimeStart =  $this->getScheduleTimestamp();
+    
+    if (isset($datetimeStart) && ($dif = strtotime($datetimeStart) - strtotime($datetime)) < 60) {
+      $last = strtotime($this->getLastRun());
+      $next = strtotime($this->scheduleTimestamp);
+      
+      $this->run();
+    }
+    
+    return $result;
+	}
+
 	public function getScheduleTimestamp() {
 		return $this->scheduleTimestamp;
 	}
