@@ -1464,6 +1464,10 @@ class scenarioExpression {
 						$cmd->execCmd($cmd_parameters);
 					}
 				} else {
+          /********************BEGIN HOME MAIN************************/
+          return $this->execCommande($this->getExpression(), $options, $scenario);
+          
+					/*
 					$cmd = cmd::byId(str_replace('#', '', $this->getExpression()));
 					if (is_object($cmd)) {
 						if ($cmd->getSubtype() == 'slider' && isset($options['slider'])) {
@@ -1478,6 +1482,8 @@ class scenarioExpression {
 					}
 					$this->setLog($scenario, __('[Erreur] Aucune commande trouvée pour ', __FILE__) . $this->getExpression());
 					return;
+          */
+          /******************** END HOME MAIN ************************/
 				}
 			} elseif ($this->getType() == 'condition') {
 				$expression = self::setTags($this->getExpression(), $scenario, true);
@@ -1683,4 +1689,43 @@ class scenarioExpression {
 		}
 	}
 
+  
+  public function execCommande($_cmdId, $_options, $_scenario) {
+    $result =       null;
+     
+    if (!is_numeric(str_replace('#', '', $_cmdId))) {
+      if (!preg_match("~^\[.+\]\[.+\]\[.+\]$~u", $_cmdId))
+        $_cmdId = '#'.scenarioExpression::convertExpressionToValue($_cmdId, $_scenario).'#';
+     
+      $_cmdId = scenarioExpression::convertHumanReadableExpressionToCmdId($_cmdId, $_scenario);
+    }
+      
+    $_cmdId = str_replace('#', '', $_cmdId);
+    
+    $cmd = cmd::byId($_cmdId);
+    if (is_object($cmd)) {
+      unset($_options['commande']);
+
+      if (isset($_options['listOption']) && $_options['listOption'] != "") {
+        $listOptions =  scenarioExpression::convertExpressionToArray($_scenario, $_options['listOption']);
+        unset($_options['listOption']);
+        
+        if (is_array($listOptions)) {
+          $listOptions = scenarioExpression::getValueOfArrayExpression($_scenario, $listOptions);
+          
+          $_options = array_merge($_options, $listOptions);
+        }
+      }
+          
+      // Si l'envoi ne contenait pas d'option inutile je n'aurait pas besoin de ceici
+      switch ($cmd->getSubtype()) {
+        case 'slider':
+          $_options['slider'] = scenarioExpression::convertExpressionToValue($_options['slider'], $_scenario);
+          break;
+      }
+      $result = $cmd->execCmd($_options, false, false, $_scenario);
+    }
+    
+    return $result;
+  }
 }
