@@ -1693,7 +1693,15 @@ class scenarioExpression {
 			$_scenario->setLog($log);
 		}
 	}
-
+ 
+  public function getIdOffObjectHumanNameId($expression, $sourceObj) {
+    if (preg_match_all("/(#".$sourceObj.")?([0-9]+)#?/", $expression, $matches)) {
+      if (is_numeric($matches[2][0]))
+        return $matches[2][0];
+    }
+    
+    return null;
+  }
   
   public function execCondition($_scenario) {
     $replaceCaractere = array("\n" => " ", 
