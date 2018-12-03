@@ -2185,6 +2185,18 @@ class cmd {
 		
     return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
 	}
+  
+	public function lastChangeStateDuration($_value = null) {
+    $cmdValue = $this->getCache('value', '');    
+    
+    if (!isset($_value) || (isset($cmdValue) && $cmdValue == $_value)) {
+      //return (strtotime('now') - strtotime($this->getCache('valueDate', date('Y-m-d H:i:s'))));
+      return (strtotime('now') - strtotime($this->getValueDate())); 
+    }
+    else
+      return history::lastChangeStateDuration($this->getId(), $_value);
+  }
+  
   /******************** END HOME MAIN ************************/
 }
 ?>
