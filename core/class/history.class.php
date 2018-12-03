@@ -294,7 +294,71 @@ class history {
 
 		return array_merge($result2, $result1);
 	}
+/*
+	public static function all($_cmd_id, $_startTime = null, $_endTime = null) {
+		$values = array(
+			'cmd_id' => $_cmd_id,
+		);
+		if ($_startTime !== null) {
+			$values['startTime'] = $_startTime;
+		}
+		if ($_endTime !== null) {
+			$values['endTime'] = $_endTime;
+		}
 
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+		FROM (
+			SELECT ' . DB::buildField(__CLASS__) . '
+			FROM history
+			WHERE cmd_id=:cmd_id ';
+
+		if ($_startTime !== null) {
+			$sql .= ' AND datetime>=:startTime';
+		}
+		if ($_endTime !== null) {
+			$sql .= ' AND datetime<=:endTime';
+		}
+		$sql .= ' UNION ALL
+			SELECT ' . DB::buildField(__CLASS__) . '
+			FROM historyArch
+			WHERE cmd_id=:cmd_id';
+		if ($_startTime !== null) {
+			$sql .= ' AND `datetime`>=:startTime';
+		}
+		if ($_endTime !== null) {
+			$sql .= ' AND `datetime`<=:endTime';
+		}
+    ********************BEGIN HOME MAIN************************
+    // Si il y a un start time on ajoute la premiere valeur avant le start time
+    // pisque cette valeur est requise lors de l'utilisation de la tendance
+    if ($_startTime !== null) {
+      $sql .= '     UNION ALL
+                    SELECT ' . DB::buildField(__CLASS__) . '
+                      FROM (
+                            SELECT ' . DB::buildField(__CLASS__) . '
+                              FROM history
+                             WHERE `cmd_id`=:cmd_id 
+                               AND `datetime`<:startTime
+                            ORDER BY datetime DESC
+                            LIMIT 1
+                           ) last_row_hist
+                    UNION ALL
+                    SELECT ' . DB::buildField(__CLASS__) . '
+                      FROM (
+                            SELECT ' . DB::buildField(__CLASS__) . '
+                              FROM historyArch
+                             WHERE `cmd_id`=:cmd_id
+                               AND `datetime`<:startTime
+                            ORDER BY datetime DESC
+                            LIMIT 1
+                           ) last_row_histArch';
+		}
+    ********************  END HOME MAIN************************
+		$sql .= ' ) as dt
+				ORDER BY `datetime` ASC';
+		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	}
+*/
 	public static function removes($_cmd_id, $_startTime = null, $_endTime = null) {
 		$values = array(
 			'cmd_id' => $_cmd_id,
@@ -583,6 +647,85 @@ class history {
 		}
 		return -1;
 	}
+
+	/**
+	 * Fonction renvoie la durée depuis le dernier changement d'état
+	 * à la valeur passée en paramètre
+	 */
+  /*
+	public static function old_lastChangeStateDuration($_cmd_id, $_value) {
+		$cmd = cmd::byId($_cmd_id);
+		if (!is_object($cmd)) {
+			return -3;
+		}
+		if ($cmd->getIsHistorized() != 1) {
+			return -2;
+		}
+    
+		$values = array(
+			'cmd_id' => $cmd->getId(),
+			'value' => trim($_value),
+		);
+
+		$sql = 'select max(det.`datetime`) as lastCmdDuration
+              from (
+                    select min(`datetime`) as datetime
+                      from `history`
+                     where `cmd_id` = :cmd_id 
+                       and `value` = :value 
+                       and `datetime` > COALESCE(
+                                                 (
+                                                  select max(`datetime`) 
+                                                    from `history` 
+                                                   where `value`!= :value 
+                                                     and `cmd_id` = :cmd_id 
+                                                     and `datetime` < (
+                                                                       select max(`datetime`) 
+                                                                         from history 
+                                                                        where `cmd_id` = :cmd_id 
+                                                                          and `value` = :value
+                                                                      )
+                                                 ),1) 
+                       and `datetime` <= COALESCE(
+                                                  (
+                                                   select max(`datetime`) 
+                                                     from history 
+                                                    where `cmd_id` = :cmd_id 
+                                                      and `value` = :value
+                                                  ),now())
+                    union all
+                    select min(`datetime`) as datetime 
+                      from `historyArch`
+                     where `cmd_id` = :cmd_id 
+                       and `value` = :value 
+                       and `datetime` > COALESCE(
+                                                 (
+                                                  select max(`datetime`) 
+                                                    from `historyArch` 
+                                                   where `value` != :value 
+                                                     and `cmd_id` = :cmd_id 
+                                                     and `datetime` < (
+                                                                       select max(`datetime`) 
+                                                                         from historyArch 
+                                                                        where `cmd_id` = :cmd_id 
+                                                                          and `value` = :value
+                                                                      )
+                                                 ),1) 
+                       and `datetime` <= COALESCE(
+                                                  (
+                                                   select max(`datetime`) 
+                                                     from `historyArch` 
+                                                    where `cmd_id` = :cmd_id 
+                                                      and `value` = :value
+                                                  ),now())
+                   ) as det';
+    $result = DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
+		if ($result['lastCmdDuration'] == '' || strtotime($result['lastCmdDuration']) === false || strtotime($result['lastCmdDuration']) == 0) {
+			return -1;
+		}
+		return strtotime('now') - strtotime($result['lastCmdDuration']);
+	}
+  */
 	/**
 	 * Fonction renvoie la durée depuis le dernier changement d'état
 	 * à la valeur passée en paramètre
@@ -590,7 +733,7 @@ class history {
 	public static function lastChangeStateDuration($_cmd_id, $_value) {
 		$cmd = cmd::byId($_cmd_id);
 		if (!is_object($cmd)) {
-			throw new Exception(__('Commande introuvable : ', __FILE__) . $_cmd_id);
+			return -3;
 		}
 		if ($cmd->getIsHistorized() != 1) {
 			return -2;
