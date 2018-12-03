@@ -1688,9 +1688,10 @@ class scenarioExpression {
 		return $this;
 	}
 
-	public function setLog(&$_scenario, $log) {
+  /********************BEGIN HOME MAIN************************/
+	public function setLog($_scenario, $log, $type = 0, $title = '', $block = 0) {
 		if ($_scenario !== null && is_object($_scenario)) {
-			$_scenario->setLog($log);
+			$_scenario->setLog($log, $type, $title, $block);
 		}
 	}
  

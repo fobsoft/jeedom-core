@@ -47,6 +47,8 @@ class scenario {
 	private $_do = true;
 
   //********************BEGIN HOME MAIN************************
+	public $_tmpLog;
+  public $_tmpLogBlock;
 	private $_variables = array();
   //******************** END HOME MAIN ************************
   
@@ -950,6 +952,11 @@ class scenario {
 		if ($this->getConfiguration('logmode') == '') {
 			$this->setConfiguration('logmode', 'default');
 		}
+    /********************BEGIN HOME MAIN************************/
+		if ($this->getConfiguration('logModeInfo') == '') {
+			$this->setConfiguration('logModeInfo', 'default');
+		}
+    /******************** END HOME MAIN ************************/
 	}
 	/**
 	 *
@@ -1776,6 +1783,7 @@ class scenario {
 	 *
 	 * @param type $log
 	 */
+   /*
 	public function setLog($log) {
 		$this->_log .= '[' . date('Y-m-d H:i:s') . '][SCENARIO] ' . $log . "\n";
 		if ($this->getConfiguration('logmode', 'default') == 'realtime') {
@@ -1783,6 +1791,7 @@ class scenario {
 			$this->_log = '';
 		}
 	}
+    */
 	/**
 	 *
 	 * @param type $_default
@@ -2032,6 +2041,70 @@ class scenario {
   
  	public function setVariables($_variables) {
 		$this->_variables = $_variables;
+	}
+	/**
+	 *
+	 * @param type $log
+	 * @param type $type (0-default, 1-flow, 2-detail, 3-step)
+	 */
+	public function setLog($log, $type = 0, $title = '', $block = null) {
+    $defaultModeInfo =  4;
+    $logModeInfo =      4;
+    //$logModeInfo =      is_numeric($this->getConfiguration('logModeInfo', $defaultModeInfo))? $this->getConfiguration('logModeInfo', $defaultModeInfo):$defaultModeInfo;
+    $logModeInfo =      $logModeInfo == 0? $defaultModeInfo:$logModeInfo; 
+    $type =             $type == 0? 1:$type;
+    
+    if ($type <= $logModeInfo) {
+      $message = '';
+      $logHead = $this->_tmpLogBlock;
+      $logDate = '[' . date('y-m-d H:i:s') . '] ';
+      
+      if ($title != '') {
+        switch ($title) {
+          case  'FLOW': $logHead .= '  ';
+                break;
+          
+        }
+        $title = '['.$title.'] ';
+      }
+      else {
+        switch ($type) {
+          case 4:   $logHead .= '  ';
+          case 3:   $logHead .= '    ' . $logHead;
+                    $title = '[FLOW] ';
+                    break;
+          default:  $title = $title != ''? '['.$title.']':'';
+                    break;
+        }
+      }
+      
+      if (!is_array($log))
+        $message = $logDate . $logHead . $title . $log . "\n";
+      else {
+        $arrLog = array_unique($log);
+      
+        // Ecriture de la premiere ligne
+        $message = $logDate . $logHead . $title . $arrLog[0] . "\n";
+        $logHead = str_pad($logHead, strlen($logDate . $logHead . $title) + 1, " ", STR_PAD_LEFT);
+        unset($arrLog[0]);
+ 
+        // Ecriture des ligne suivante
+        foreach (array_unique($arrLog) as $ligne)
+          $message .= "-" . $logHead . $ligne . "\n";
+      }
+      
+      $this->_log .= $message;
+      if ($this->getConfiguration('logmode', 'default') == 'realtime') {
+        $this->persistLog(true);
+      }
+    }
+    
+    if (isset($block)) {
+      if ($block == 1)
+        $this->_tmpLogBlock .= "  ";    
+      elseif ($block == 0)
+        $this->_tmpLogBlock = substr($this->_tmpLogBlock, 0, strlen($this->_tmpLogBlock) - 2);
+    }
 	}
 }
 ?>

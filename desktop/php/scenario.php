@@ -222,6 +222,19 @@ if (count($totalScenario) == 0) {
             <input type="checkbox" class="scenarioAttr" data-l1key="configuration" data-l2key="timeline::enable" title="{{Les exécutions du scénario pourront être vues dans la timeline.}}">
           </div>
         </div>
+        <!-- /********************BEGIN HOME MAIN************************/ -->
+        <div class="form-group">
+          <label class="col-xs-5 control-label">{{Log Info}}</label>
+          <div class="col-xs-6">
+            <select class="scenarioAttr form-control" data-l1key="configuration" data-l2key="logModeInfo">
+              <option value="0">{{Défaut}}</option>
+              <option value="1">{{Flow}}</option>
+              <option value="2">{{Détail}}</option>
+              <option value="3">{{Step}}</option>
+            </select>
+          </div>
+        </div>
+        <!-- /******************** END HOME MAIN ************************/ -->
       </fieldset>
     </form>
   </div>
