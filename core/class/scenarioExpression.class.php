@@ -1133,6 +1133,9 @@ class scenarioExpression {
 				}
 			}
 			if ($this->getType() == 'action') {
+        if (method_exists($this, ($method = 'action_'.$this->getExpression()))) {
+          return $this->$method($scenario, $options);
+        }
 				if ($this->getExpression() == 'icon') {
 					if ($scenario !== null) {
 						$options = $this->getOptions();
