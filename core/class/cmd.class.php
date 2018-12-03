@@ -2031,6 +2031,12 @@ class cmd {
 	}
 
 	public function getValueDate() {
+    /********************BEGIN HOME MAIN************************/
+    if (!isset($this->_valueDate) || $this->_valueDate == '') {
+			$this->setValueDate($this->getCache('valueDate', date('Y-m-d H:i:s'), true));
+		}
+    /******************** END HOME MAIN ************************/
+    
 		return $this->_valueDate;
 	}
 
