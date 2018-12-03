@@ -776,19 +776,61 @@ class scenario {
 			$this->persistLog();
 			return;
 		}
+    // Configuration des valeurs d'execution
+    $parentObject = $this -> getObject();
+    
+    $this->setVariableElement('#scenarioHumanName#', $this -> getName(), array('global' => 1, 'private' => 1));
+    $this->setVariableElement('#scenarioId#', $this -> getId(), array('global' => 1, 'private' => 1));
+    $this->setVariableElement('#scenarioStartDate#', date('Y-m-d H:i:s'), array('global' => 1, 'private' => 1));
+    
+    if ($parentObject) {
+      $this->setVariableElement('#scenarioLogName#',  $this->getGroup() . ' - ' . $parentObject -> getHumanName() . ' - ' . $this -> getName() . ' ('. $this -> getId() . ')', array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#parentObjectHumanName#', $parentObject -> getHumanName(), array('global' => 1, 'private' => 1)); // Ne peu avoir de guilmet puisqu'il remplace une partie de commande
+      $this->setVariableElement('#parentObjectId#', $this -> getObject_id(),  array('global' => 1, 'private' => 1));
+    }
+    else
+      $this->setVariableElement('#scenarioLogName#',  $this->getGroup() . ' -  - ' . $this -> getName() . ' ('. $this -> getId() . ')', array('global' => 1, 'private' => 1));
 
 		$cmd = cmd::byId(str_replace('#', '', $_trigger));
 		if (is_object($cmd)) {
 			log::add('event', 'info', __('Exécution du scénario ', __FILE__) . $this->getHumanName() . __(' déclenché par : ', __FILE__) . $cmd->getHumanName());
+      // eqLogic
+      $eqLogic = $cmd->getEqLogic();
+      $this->setVariableElement('#execById#', $eqLogic->getConfiguration('execById'), array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerEq#', $eqLogic->getHumanName(), array('global' => 1, 'private' => 1));
+
+      // Cmd
+      $triggerValue =         $cmd->execCmd();
+      $triggerValueIsString = !is_numeric($triggerValue);
+      
+      // Remplacement direct de valeur
+      $this->setVariableElement('#cmdObj#', $cmd, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#trigger#', $cmd->getHumanName(), array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerValue#', $triggerValue, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerId#', $_trigger, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerGenericType#', $cmd->getGeneric_type(), array('global' => 1, 'private' => 1));
+      $this->setVariableElement($_trigger, $triggerValue, array('global' => 1, 'private' => 0));
 			if ($this->getConfiguration('timeline::enable')) {
 				jeedom::addTimelineEvent(array('type' => 'scenario', 'id' => $this->getId(), 'name' => $this->getHumanName(true), 'datetime' => date('Y-m-d H:i:s'), 'trigger' => $cmd->getHumanName(true)));
 			}
 		} else {
 			log::add('event', 'info', __('Exécution du scénario ', __FILE__) . $this->getHumanName() . __(' déclenché par : ', __FILE__) . $_trigger);
+      // eqLogic
+      $this->setVariableElement('#execById#',             null, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerEq#',          null, array('global' => 1, 'private' => 1));
+
+      // Remplacement direct de valeur
+      $this->setVariableElement('#cmdObj#',               null, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#trigger#',            null, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerValue#',       null, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerId#',          null, array('global' => 1, 'private' => 1));
+      $this->setVariableElement('#triggerGenericType#', null, array('global' => 1, 'private' => 1));
+        
 			if ($this->getConfiguration('timeline::enable')) {
 				jeedom::addTimelineEvent(array('type' => 'scenario', 'id' => $this->getId(), 'name' => $this->getHumanName(true), 'datetime' => date('Y-m-d H:i:s'), 'trigger' => ($_trigger == 'schedule') ? 'programmation' : $_trigger));
 			}
 		}
+
     $messageLog = 'Start : ' . trim($_message, "'") . '.';
 		if (count($this->getTags()) > 0) {
 			$messageLog .= ' Tags : ' . json_encode($this->getTags());
@@ -796,6 +838,9 @@ class scenario {
 		if (count($this->getVaribles()) > 0) {
 			$messageLog .= ' Variables internes : ' . json_encode($this->getVariables());
 		}
+    
+    $this->setVariableElement('#messageStart#', $messageLog, array('global' => 1, 'private' => 1));
+    
     $this->setLog($messageLog);
 		$this->setLastLaunch(date('Y-m-d H:i:s'));
 		$this->setState('in progress');
