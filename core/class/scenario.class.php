@@ -46,6 +46,10 @@ class scenario {
 	private $_tags = array();
 	private $_do = true;
 
+  //********************BEGIN HOME MAIN************************
+	private $_variables = array();
+  //******************** END HOME MAIN ************************
+  
 	/*     * ***********************Méthodes statiques*************************** */
 
 	/**
@@ -328,6 +332,13 @@ class scenario {
 			$scenario->setTags($_options['tags']);
 			$scenario->setLog(__('Tags : ', __FILE__) . json_encode($scenario->getTags()));
 		}
+
+    //********************BEGIN HOME MAIN************************
+		if (isset($_options['variables']) && is_array($_options['variables']) && count($_options['variables']) > 0) {
+			$scenario->setVariables($_options['variables']);
+		}    
+    //******************** END HOME MAIN ************************
+
 		if (!is_object($scenarioElement) || !is_object($scenario)) {
 			return;
 		}
@@ -724,6 +735,11 @@ class scenario {
 			if (count($this->getTags()) != '') {
 				$this->setCache('tags', $this->getTags());
 			}
+      /********************BEGIN HOME MAIN************************/
+			if (count($this->getVariables()) != '') {
+				$this->setCache('variables', $this->getVariables());
+			}
+      /******************** END HOME MAIN ************************/
 			$cmd = __DIR__ . '/../../core/php/jeeScenario.php ';
 			$cmd .= ' scenario_id=' . $this->getId();
 			$cmd .= ' trigger=' . escapeshellarg($_trigger);
@@ -743,6 +759,10 @@ class scenario {
 		if ($this->getCache('tags') != '') {
 			$this->setTags($this->getCache('tags'));
 			$this->setCache('tags', '');
+		}
+		if ($this->getCache('variables') != '') {
+			$this->setTags($this->getCache('variables'));
+			$this->setCache('variables', '');
 		}
 		if ($this->getIsActive() != 1) {
 			$this->setLog(__('Impossible d\'exécuter le scénario : ', __FILE__) . $this->getHumanName() . __(' sur : ', __FILE__) . $_message . __(' car il est désactivé', __FILE__));
@@ -767,11 +787,14 @@ class scenario {
 				jeedom::addTimelineEvent(array('type' => 'scenario', 'id' => $this->getId(), 'name' => $this->getHumanName(true), 'datetime' => date('Y-m-d H:i:s'), 'trigger' => ($_trigger == 'schedule') ? 'programmation' : $_trigger));
 			}
 		}
-		if (count($this->getTags()) == 0) {
-			$this->setLog('Start : ' . trim($_message, "'") . '.');
-		} else {
-			$this->setLog('Start : ' . trim($_message, "'") . '. Tags : ' . json_encode($this->getTags()));
+    $messageLog = 'Start : ' . trim($_message, "'") . '.';
+		if (count($this->getTags()) > 0) {
+			$messageLog .= ' Tags : ' . json_encode($this->getTags());
 		}
+		if (count($this->getVaribles()) > 0) {
+			$messageLog .= ' Variables internes : ' . json_encode($this->getVariables());
+		}
+    $this->setLog($messageLog);
 		$this->setLastLaunch(date('Y-m-d H:i:s'));
 		$this->setState('in progress');
 		$this->setPID(getmypid());
@@ -1962,5 +1985,53 @@ class scenario {
 		cache::set('scenarioCacheAttr' . $this->getId(), utils::setJsonAttr(cache::byKey('scenarioCacheAttr' . $this->getId())->getValue(), $_key, $_value));
 	}
 
+  /**
+    global:   
+    private:  1 si les valeurs peuvent avoir changer entre l'inscription et l'execution (sleep, do)
+  */
+  public function getVariables($_global = null, $_private = null) {
+    $arrayReturn = array();
+    
+    foreach ($this->_variables as $key => $values) {
+      if (
+          (!isset($_global) || $values['global'] == $_global)
+          && (!isset($_private) || $values['private'] == $_private)
+         )
+        $arrayReturn[$key] = $this->_variables[$key];
+    }
+		return $arrayReturn;
+	}
+  
+	public function getArrayVariableElement($_element) {
+    return $this->variableElementIsDefined($_element)? $this->_variables[$_element]:null;
+	}
+  
+	public function getVariableElement($_element) {
+    return $this->variableElementIsDefined($_element)? $this->_variables[$_element]['value']:null;
+	}
+  
+	public function setVariableElement($_name, $_value, $_options = array('global' => 1, 'private' => 0)) {
+    if (!is_numeric($_value) && $_value == '')
+      $_value = 'null';
+
+    if (isset($this->_variables[$_name]))
+      $this->_variables[$_name]['value'] = $_value;
+    else
+      $this->_variables[$_name] = array('value' => $_value, 'global' => $_options['global'], 'private' => $_options['private']);
+    
+    return $variable['value'];
+	}
+
+	public function setArrayVariableElement($_name, $_arrInfo) {
+    $this->_variables[$_name] = $_arrInfo;
+	}
+  
+	public function variableElementIsDefined($_element) {
+    return (isset($this->_variables[$_element]))? 1:0;
+	}
+  
+ 	public function setVariables($_variables) {
+		$this->_variables = $_variables;
+	}
 }
 ?>
