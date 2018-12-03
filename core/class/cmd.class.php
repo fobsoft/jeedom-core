@@ -2106,5 +2106,69 @@ class cmd {
 		cache::set('cmdCacheAttr' . $this->getId(), utils::setJsonAttr(cache::byKey('cmdCacheAttr' . $this->getId())->getValue(), $_key, $_value));
 	}
 
+  /********************BEGIN HOME MAIN************************/
+  
+	public static function byGenericTypeOfObject($_generic_type, $_object_id = null, $_eqLogic_id = null, $_one = false) {
+    if ($_generic_type == '')
+      return;
+    
+		$values = array();
+    
+		$sql =      'SELECT ' . DB::buildField(__CLASS__, 'c') . '
+                   FROM cmd c
+                        INNER JOIN eqLogic el 
+                          ON (c.eqLogic_id=el.id ';
+                     
+		if ($_eqLogic_id !== null) {
+      if (is_array($_eqLogic_id)) {
+        $in = '';
+        foreach ($_eqLogic_id as $value) {
+          $in .= "'" . $value . "',";
+        }
+        $sql .= '             AND el.id IN (' . trim($in, ',') . ') ';
+      }
+      else {
+        $values['eqLogic_id'] = $_eqLogic_id;
+        $sql .= '             AND el.id=:eqLogic_id';
+      }
+		}
+    $sql .= '                                   )
+                        INNER JOIN object ob 
+                          ON (el.object_id=ob.id ';
+		if ($_object_id !== null) {
+      if (is_array($_object_id)) {
+        $in = '';
+        foreach ($_object_id as $value) {
+          $in .= "'" . $value . "',";
+        }
+        $sql .= '             AND ob.id IN (' . trim($in, ',') . ') ';
+      }
+      else {
+        $values['object_id'] = $_object_id;
+        $sql .= '             AND ob.id=:object_id';
+      }
+		}
+    $sql .= '                                   ) ';
+    
+		if (is_array($_generic_type)) {
+			$in = '';
+			foreach ($_generic_type as $value) {
+				$in .= "'" . $value . "',";
+			}
+			$sql .= 'WHERE c.generic_type IN (' . trim($in, ',') . ') ';
+		} else {
+			$values['generic_type'] = $_generic_type;
+
+			$sql .= 'WHERE c.generic_type=:generic_type ';
+		}
+    
+		$sql .= ' ORDER BY c.order';
+
+		if ($_one) {
+			return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
+		}
+		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+	}
+  /******************** END HOME MAIN ************************/
 }
 ?>
