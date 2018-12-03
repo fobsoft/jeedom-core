@@ -1486,6 +1486,9 @@ class scenarioExpression {
           /******************** END HOME MAIN ************************/
 				}
 			} elseif ($this->getType() == 'condition') {
+        /********************BEGIN HOME MAIN************************/
+        $result = $this->execCondition($scenario);
+        /*
 				$expression = self::setTags($this->getExpression(), $scenario, true);
 				$message = __('Evaluation de la condition : [', __FILE__) . $expression . '] = ';
 				$result = evaluate($expression);
@@ -1499,6 +1502,8 @@ class scenarioExpression {
 					$message .= $result;
 				}
 				$this->setLog($scenario, $message);
+        */
+        /******************** END HOME MAIN ************************/
 				return $result;
 			} elseif ($this->getType() == 'code') {
 				$this->setLog($scenario, __('Exécution d\'un bloc code', __FILE__));
@@ -1689,6 +1694,81 @@ class scenarioExpression {
 		}
 	}
 
+  
+  public function execCondition($_scenario) {
+    $replaceCaractere = array("\n" => " ", 
+                              "&&" => " && ", 
+                              "||" => " || ", 
+                              " or " => " || ", 
+                              " OR " => " || ", 
+                              " ou " => " || ", 
+                              " OU " => " || ", 
+                              " and " => " && ", 
+                              " AND " => " && ", 
+                              " et " => " && ", 
+                              " ET " => " && ", 
+                              "  " => " ");
+    
+    $expression =                 str_replace(array_keys($replaceCaractere), array_values($replaceCaractere), $this->getExpression());
+    $humanReadableExpression[] =  $expression;
+    $expression =                 $this->convertExpressionToValue($expression, $_scenario, $humanReadableExpression);
+    $humanReadableExpression[] =  $expression;
+    
+    // Ajout des guilmets necessaire a l'evaluation de l'expression
+    //  Idealement preg_match_all devrait retourner que des element avec au moins une lettre
+    //  1 && 1 && "test" && (22.5 - 15) > 5 || (0 > 0  &&  22 < 300) ||  (67.8 <= 1  &&  1 < 1800) ||  Present - sleep == "Present - sleep" && [Systeme][Periode][Mode] == "[Aire ouverte RC][Mode][Mode]" || [Cellulaire][(241) - Cellulaire Julie][Status]
+    // Note
+    // Trouver un moyen de padder ceci sans erreur
+    //   1 && 1 && (Present - sleep == "Present - sleep" || Present == "Present - sleep") => Solution:: Remplacer par longueur de reponse
+    
+    //  ([ ]?)\"([\[\]\(\)# \.\-\w]+)\"([ ]?)
+    //    ...
+    //  ([ ]?)\[([\[\]\(\)# \.\-\w]+)\]([ ]?)
+    //    ...
+    //  ([ ]?)([\[\]#\.\-\w]+)( - ([\[\]#\.\-\w]+))+([ ]?)
+    //    Presence == "Arrive" -> "Presence" == "Arrive" 
+    //    Presence - RC == "Arrive" -> "Presence - RC" == "Arrive" 
+    
+    //  Test a faire
+    //    "[RC - Salle de bain][Thermostate][Temperature Actuel]" == "[RC - Salle de bain][Thermostate][Temperature Configure]"
+    //    Presence == "Arrive"
+    //    Presence - RC == "Arrive"
+    //    -22.5 > (-21.5 - 2)
+    //    -22.5 > (-21.5a - 2)
+    
+    // Org: preg_match_all("~([ ]?)\"([\[\]\(\)# \.\-\w]+)\"([ ]?)|([ ]?)\[([\[\]\(\)# \.\-\w]+)\]([ ]?)|([ ]?)([\[\]#\.\-\w]+)([ ]?)~u", $expression, $pregMatchesVariable, PREG_PATTERN_ORDER);
+    // Org: preg_match_all("~([ ]?)\"([\[\]\(\)# \.\-\w]+)\"([ ]?)|([ ]?)\[([\[\]\(\)# \.\-\w]+)\]([ ]?)|([ ]?)([\[\]#\.\-\w]+)( - ([\[\]#\.\-\w]+))?([ ]?)~u", $expression, $pregMatchesVariable, PREG_PATTERN_ORDER);
+    
+    preg_match_all("~([ ]?)\"([\[\]\(\)# \.\-\w]+)\"([ ]?)|([ ]?)\[([\[\]\(\)# \.\-\w]+)\]([ ]?)|([ ]?)([\[\]#\.\-\w]+)( - ([\[\]#\.\-\w]+))?([ ]?)~u", $expression, $pregMatchesVariable, PREG_PATTERN_ORDER);
+    foreach ($pregMatchesVariable[0] as $match) {
+      $expression = str_replace($match, $this->padValue($match), $expression);
+    }
+    $humanReadableExpression[] = $expression;
+
+    // Construction du log detaille
+    $humanReadableExpression = array_unique($humanReadableExpression);
+    $humanReadableExpression[0] = $this->convertExpressionToHumanReadable($humanReadableExpression[0]);
+    foreach($humanReadableExpression as $value) {
+      if (!isset($message) || $message == '') 
+        $message = '[EVAL] ' . $value . ' => ';
+      else
+        $message .= "\n".'-                          ' . $value;
+    }
+               
+    $result = evaluate($expression);
+    if (is_bool($result) || is_numeric($result)) {
+      if ($result >= 1) {
+        $message .= ' ==> '.__('Vrai', __FILE__);
+      } else {
+        $message .= ' ==> '.__('Faux', __FILE__);
+      }
+    } else {
+      $message .= ' ==> '.$result;
+    }
+    $this->setLog($_scenario, $message);
+
+    return $result;    
+  }
   
   public function execCommande($_cmdId, $_options, $_scenario) {
     $result =       null;
